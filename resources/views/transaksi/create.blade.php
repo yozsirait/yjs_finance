@@ -1,57 +1,64 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl">Input Transaksi</h2>
+        <h2 class="font-semibold text-xl text-gray-800">Tambah Transaksi</h2>
     </x-slot>
 
-    <div class="max-w-xl mx-auto mt-6">
-        @if(session('success'))
-            <div class="mb-4 text-green-500">{{ session('success') }}</div>
-        @endif
+    @if(session('success'))
+        <div class="max-w-4xl mx-auto mt-6 px-4 py-3 bg-green-100 text-green-800 rounded shadow">
+            {{ session('success') }}
+        </div>
+    @endif
 
-        <form method="POST" action="{{ route('transaksi.store') }}">
-            @csrf
+    <x-form-section title="Form Transaksi" action="{{ route('transaksi.store') }}">
+        @csrf
 
-            <div class="mb-4">
-                <label>Nama Anggota</label>
-                <select name="member_id" required class="w-full border rounded">
-                    <option value="">Pilih Anggota</option>
-                    @foreach($members as $member)
-                        <option value="{{ $member->id }}">{{ $member->name }} ({{ $member->role }})</option>
-                    @endforeach
-                </select>
-            </div>
+        <div>
+            <label class="block text-sm font-medium text-gray-700">Nama Anggota</label>
+            <select name="member_id" required class="mt-1 w-full border-gray-300 rounded-md shadow-sm">
+                <option value="">Pilih Anggota</option>
+                @foreach($members as $member)
+                    <option value="{{ $member->id }}">{{ $member->name }} ({{ $member->role }})</option>
+                @endforeach
+            </select>
+        </div>
 
-            <div class="mb-4">
-                <label>Jenis</label>
-                <select name="type" required class="w-full border rounded">
-                    <option value="pemasukan">Pemasukan</option>
-                    <option value="pengeluaran">Pengeluaran</option>
-                </select>
-            </div>
+        <div>
+            <label class="block text-sm font-medium text-gray-700">Jenis Transaksi</label>
+            <select name="type" required class="mt-1 w-full border-gray-300 rounded-md shadow-sm">
+                <option value="pemasukan">Pemasukan</option>
+                <option value="pengeluaran">Pengeluaran</option>
+            </select>
+        </div>
 
-            <div class="mb-4">
-                <label>Jumlah</label>
-                <input type="number" step="0.01" name="amount" required class="w-full border rounded">
-            </div>
+        <div>
+            <label class="block text-sm font-medium text-gray-700">Tanggal</label>
+            <input type="date" name="date" required class="mt-1 w-full border-gray-300 rounded-md shadow-sm">
+        </div>
 
-            <div class="mb-4">
-                <label>Tanggal</label>
-                <input type="date" name="date" required class="w-full border rounded">
-            </div>
+        <div>
+            <label class="block text-sm font-medium text-gray-700">Jumlah (Rp)</label>
+            <input type="text" name="amount" id="amount" required
+                class="mt-1 w-full border-gray-300 rounded-md shadow-sm text-right"
+                placeholder="0" inputmode="numeric">
+        </div>
 
-            <div class="mb-4">
-                <label>Kategori</label>
-                <input type="text" name="category" class="w-full border rounded">
-            </div>
+        <div class="md:col-span-2">
+            <label class="block text-sm font-medium text-gray-700">Kategori</label>
+            <input type="text" name="category" class="mt-1 w-full border-gray-300 rounded-md shadow-sm">
+        </div>
 
-            <div class="mb-4">
-                <label>Deskripsi</label>
-                <textarea name="description" class="w-full border rounded"></textarea>
-            </div>
+        <div class="md:col-span-2">
+            <label class="block text-sm font-medium text-gray-700">Deskripsi</label>
+            <textarea name="description" rows="3" class="mt-1 w-full border-gray-300 rounded-md shadow-sm"></textarea>
+        </div>
+    </x-form-section>
 
-            <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded border border-black">
-                Simpan
-            </button>
-        </form>
-    </div>
+    <script>
+        // Format Rupiah
+        document.getElementById('amount').addEventListener('input', function(e) {
+            let value = e.target.value.replace(/[^\d]/g, '');
+            value = new Intl.NumberFormat('id-ID').format(value);
+            e.target.value = value;
+        });
+    </script>
 </x-app-layout>

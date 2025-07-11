@@ -30,7 +30,7 @@ class TransactionController extends Controller
             'user_id'    => auth()->id(),
             'member_id'  => $request->member_id,
             'type'       => $request->type,
-            'amount'     => $request->amount,
+            'amount' => str_replace('.', '', $request->amount),
             'date'       => $request->date,
             'category'   => $request->category,
             'description'=> $request->description,
