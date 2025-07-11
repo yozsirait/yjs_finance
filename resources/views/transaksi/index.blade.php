@@ -46,6 +46,18 @@
             </div>
 
             <div>
+                <label class="text-sm text-gray-600">Akun</label>
+                <select name="account_id" class="rounded border-gray-300">
+                    <option value="">Semua</option>
+                    @foreach (auth()->user()->accounts as $acc)
+                        <option value="{{ $acc->id }}" {{ request('account_id') == $acc->id ? 'selected' : '' }}>
+                            {{ $acc->name }} ({{ ucfirst($acc->type) }})
+                        </option>
+                    @endforeach
+                </select>
+            </div>
+
+            <div>
                 <label class="text-sm text-gray-600">Anggota</label>
                 <select name="member" class="mt-1 border-gray-300 rounded-md">
                     <option value="">Semua</option>
@@ -76,6 +88,7 @@
                         <th class="px-4 py-2 text-left">Tanggal</th>
                         <th class="px-4 py-2 text-left">Anggota</th>
                         <th class="px-4 py-2 text-left">Tipe</th>
+                        <th class="px-4 py-2 text-left">Akun</th>
                         <th class="px-4 py-2 text-left">Kategori</th>
                         <th class="px-4 py-2 text-right">Jumlah</th>
                         <th class="px-4 py-2 text-left">Keterangan</th>
@@ -94,6 +107,10 @@
                                     {{ $trx->type }}
                                 </span>
                             </td>
+                            <td class="px-2 py-1">
+                                {{ $trx->account?->name }}
+                                <small class="text-gray-500">({{ ucfirst($trx->account?->type) }})</small>
+                            </td>
                             <td class="px-4 py-2">{{ $trx->category ?? '-' }}</td>
                             <td class="px-4 py-2 text-right font-semibold">
                                 Rp {{ number_format($trx->amount, 0, ',', '.') }}
@@ -102,6 +119,9 @@
                             <td class="px-4 py-2 flex gap-2">
                                 <a href="{{ route('transaksi.edit', $trx->id) }}"
                                     class="text-blue-600 hover:underline text-sm">Edit</a>
+                                <a href="{{ route('transaksi.duplicate', $trx->id) }}"
+                                    class="text-yellow-600 hover:underline text-sm">Duplicate</a>
+
 
                                 <form action="{{ route('transaksi.destroy', $trx->id) }}" method="POST"
                                     onsubmit="return confirm('Yakin hapus transaksi ini?')">

@@ -3,22 +3,39 @@
         <h2 class="text-xl font-semibold text-gray-800">Edit Transaksi</h2>
     </x-slot>
 
-    <form action="{{ route('transaksi.update', $transaction->id) }}" method="POST" class="bg-white p-6 rounded-xl shadow max-w-2xl mx-auto space-y-4">
+    <form action="{{ route('transaksi.update', $transaction->id) }}" method="POST"
+        class="bg-white p-6 rounded-xl shadow max-w-2xl mx-auto space-y-4">
         @csrf
         @method('PUT')
 
         <div>
             <label class="block text-sm font-medium text-gray-700">Tanggal</label>
-            <input type="date" name="date" value="{{ $transaction->date }}" required class="mt-1 w-full rounded-md border-gray-300">
+            <input type="date" name="date" value="{{ $transaction->date }}" required
+                class="mt-1 w-full rounded-md border-gray-300">
         </div>
 
         <div>
             <label class="block text-sm font-medium text-gray-700">Jenis Transaksi</label>
             <select name="type" id="type" required class="mt-1 w-full rounded-md border-gray-300">
                 <option value="pemasukan" {{ $transaction->type == 'pemasukan' ? 'selected' : '' }}>Pemasukan</option>
-                <option value="pengeluaran" {{ $transaction->type == 'pengeluaran' ? 'selected' : '' }}>Pengeluaran</option>
+                <option value="pengeluaran" {{ $transaction->type == 'pengeluaran' ? 'selected' : '' }}>Pengeluaran
+                </option>
             </select>
         </div>
+
+        <div>
+            <label class="block text-sm font-medium text-gray-700">Akun</label>
+            <select name="account_id" class="mt-1 w-full rounded-md border-gray-300">
+                <option value="">Pilih Akun</option>
+                @foreach (auth()->user()->accounts as $acc)
+                    <option value="{{ $acc->id }}"
+                        {{ (isset($transaction) && $transaction->account_id == $acc->id) || old('account_id') == $acc->id ? 'selected' : '' }}>
+                        {{ $acc->name }} ({{ ucfirst($acc->type) }})
+                    </option>
+                @endforeach
+            </select>
+        </div>
+
 
         <div>
             <label class="block text-sm font-medium text-gray-700">Kategori</label>
@@ -34,8 +51,9 @@
         <div>
             <label class="block text-sm font-medium text-gray-700">Anggota</label>
             <select name="member_id" required class="mt-1 w-full rounded-md border-gray-300">
-                @foreach($members as $member)
-                    <option value="{{ $member->id }}" {{ $transaction->member_id == $member->id ? 'selected' : '' }}>
+                @foreach ($members as $member)
+                    <option value="{{ $member->id }}"
+                        {{ $transaction->member_id == $member->id ? 'selected' : '' }}>
                         {{ $member->name }}
                     </option>
                 @endforeach
@@ -44,8 +62,9 @@
 
         <div>
             <label class="block text-sm font-medium text-gray-700">Jumlah (Rp)</label>
-            <input type="text" name="amount" id="amount" required class="mt-1 w-full rounded-md border-gray-300 text-right"
-                   value="{{ number_format($transaction->amount, 0, ',', '.') }}">
+            <input type="text" name="amount" id="amount" required
+                class="mt-1 w-full rounded-md border-gray-300 text-right"
+                value="{{ number_format($transaction->amount, 0, ',', '.') }}">
         </div>
 
         <div>
@@ -79,11 +98,11 @@
         }
 
         // Load kategori saat load page dan saat ubah tipe
-        document.addEventListener('DOMContentLoaded', function () {
+        document.addEventListener('DOMContentLoaded', function() {
             loadCategories(typeSelect.value, "{{ $transaction->category }}");
         });
 
-        typeSelect.addEventListener('change', function () {
+        typeSelect.addEventListener('change', function() {
             loadCategories(this.value);
         });
 

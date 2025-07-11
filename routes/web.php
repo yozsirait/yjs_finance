@@ -3,6 +3,8 @@
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\AccountController;
+use App\Http\Controllers\DashboardController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -14,6 +16,9 @@ Route::get('/dashboard', function () {
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
+    // Dashboard
+    Route::get('/dashboard', [DashboardController::class, 'index'])->middleware(['auth'])->name('dashboard');
+
     // Profile
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
@@ -26,11 +31,16 @@ Route::middleware('auth')->group(function () {
     Route::get('/transaksi/{id}/edit', [TransactionController::class, 'edit'])->name('transaksi.edit');
     Route::put('/transaksi/{id}', [TransactionController::class, 'update'])->name('transaksi.update');
     Route::delete('/transaksi/{id}', [TransactionController::class, 'destroy'])->name('transaksi.destroy');
+    Route::get('/transaksi/{id}/duplicate', [TransactionController::class, 'duplicate'])->name('transaksi.duplicate');
 
 
     // Kategori
     Route::resource('/kategori', CategoryController::class)->except(['show', 'edit', 'update']);
     Route::get('/kategori/by-type/{type}', [CategoryController::class, 'byType'])->name('kategori.byType');
+
+    // Akun Bank & Wallet
+    Route::resource('/akun', AccountController::class)->except(['show']);
+
 });
 
 
