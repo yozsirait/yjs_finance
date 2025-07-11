@@ -10,8 +10,8 @@
 
         <div>
             <label class="block text-sm font-medium text-gray-700">Tanggal</label>
-            <input type="date" name="date" value="{{ $transaction->date }}" required
-                class="mt-1 w-full rounded-md border-gray-300">
+            <input type="date" name="date" value="{{ old('date', $transaction->date->format('Y-m-d')) }}" required>
+            
         </div>
 
         <div>

@@ -18,9 +18,19 @@
             </select>
         </div>
         <div>
-            <label class="block">Saldo Awal</label>
-            <input name="balance" type="number" step="0.01" class="w-full rounded border-gray-300" value="0">
+            <label class="block text-sm font-medium text-gray-700">Saldo Awal (Rp)</label>
+            <input type="text" name="initial_balance" id="initial_balance"
+                class="mt-1 w-full rounded border-gray-300 text-right" value="{{ old('initial_balance', '0') }}">
         </div>
+
+        <script>
+            // Format rupiah saat ketik
+            document.getElementById('initial_balance').addEventListener('input', function(e) {
+                let value = e.target.value.replace(/[^\d]/g, '');
+                e.target.value = new Intl.NumberFormat('id-ID').format(value);
+            });
+        </script>
+
         <div>
             <button class="bg-blue-600 text-white px-4 py-2 rounded">Simpan</button>
         </div>

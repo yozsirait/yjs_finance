@@ -118,16 +118,25 @@
                             <td class="px-4 py-2">{{ $trx->description }}</td>
                             <td class="px-4 py-2 flex gap-2">
                                 <a href="{{ route('transaksi.edit', $trx->id) }}"
-                                    class="text-blue-600 hover:underline text-sm">Edit</a>
+                                    class="inline-flex items-center px-3 py-1.5 bg-blue-600 text-white text-sm font-medium rounded hover:bg-blue-700 transition">
+                                    Edit
+                                </a>
+
+                                {{-- Tombol Duplicate --}}
                                 <a href="{{ route('transaksi.duplicate', $trx->id) }}"
-                                    class="text-yellow-600 hover:underline text-sm">Duplicate</a>
+                                    class="inline-flex items-center px-3 py-1.5 bg-yellow-500 text-white text-sm font-medium rounded hover:bg-yellow-600 transition">
+                                    Duplicate
+                                </a>
 
-
+                                {{-- Tombol Hapus --}}
                                 <form action="{{ route('transaksi.destroy', $trx->id) }}" method="POST"
-                                    onsubmit="return confirm('Yakin hapus transaksi ini?')">
+                                    onsubmit="return confirm('Yakin hapus transaksi ini?')" class="inline">
                                     @csrf
                                     @method('DELETE')
-                                    <button type="submit" class="text-red-600 hover:underline text-sm">Hapus</button>
+                                    <button type="submit"
+                                        class="inline-flex items-center px-3 py-1.5 bg-red-600 text-white text-sm font-medium rounded hover:bg-red-700 transition">
+                                        Hapus
+                                    </button>
                                 </form>
                             </td>
 
