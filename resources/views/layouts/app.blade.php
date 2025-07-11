@@ -27,12 +27,7 @@
                 <a href="/kategori" class="flex items-center gap-2 hover:text-blue-600 {{ active('kategori') }}">
                     <i data-lucide="folder" class="w-5 h-5"></i> Kategori
                 </a>
-                <a href="/pemasukan" class="flex items-center gap-2 hover:text-blue-600 {{ active('pemasukan') }}">
-                    <i data-lucide="arrow-down-circle" class="w-5 h-5"></i> Pemasukan
-                </a>
-                <a href="/pengeluaran" class="flex items-center gap-2 hover:text-blue-600 {{ active('pengeluaran') }}">
-                    <i data-lucide="arrow-up-circle" class="w-5 h-5"></i> Pengeluaran
-                </a>
+                
                 <a href="/bank" class="flex items-center gap-2 hover:text-blue-600 {{ active('bank') }}">
                     <i data-lucide="credit-card" class="w-5 h-5"></i> Bank & Wallet
                 </a>

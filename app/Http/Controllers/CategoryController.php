@@ -34,4 +34,27 @@ class CategoryController extends Controller
 
         return redirect()->route('kategori.index')->with('success', 'Kategori berhasil ditambahkan');
     }
+
+    public function destroy(Category $kategori)
+    {
+        // Pastikan user hanya bisa menghapus miliknya
+        if ($kategori->user_id !== auth()->id()) {
+            abort(403);
+        }
+
+        $kategori->delete();
+
+        return redirect()->route('kategori.index')->with('success', 'Kategori berhasil dihapus');
+    }
+
+    public function byType($type)
+    {
+        $categories = auth()->user()
+            ->categories()
+            ->where('type', $type)
+            ->select('id', 'name')
+            ->get();
+
+        return response()->json($categories);
+    }
 }
