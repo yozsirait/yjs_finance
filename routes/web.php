@@ -5,6 +5,7 @@ use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\AccountController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\TransferController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -40,6 +41,11 @@ Route::middleware('auth')->group(function () {
 
     // Akun Bank & Wallet
     Route::resource('/akun', AccountController::class)->except(['show']);
+
+    // Mutasi
+    Route::get('/mutasi', [TransferController::class, 'create'])->name('mutasi.create');
+    Route::post('/mutasi', [TransferController::class, 'store'])->name('mutasi.store');
+
 
 });
 

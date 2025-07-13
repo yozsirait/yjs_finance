@@ -31,6 +31,9 @@
                 <a href="/akun" class="flex items-center gap-2 hover:text-blue-600 {{ active('akun') }}">
                     <i data-lucide="credit-card" class="w-5 h-5"></i> Bank & Wallet
                 </a>
+                <a href="/mutasi" class="flex items-center gap-2 hover:text-blue-600 {{ active('mutasi') }}">
+                    <i data-lucide="repeat" class="w-5 h-5"></i> Mutasi Rekening
+                </a>
                 <a href="/transaksi" class="flex items-center gap-2 hover:text-blue-600 {{ active('transaksi') }}">
                     <i data-lucide="list" class="w-5 h-5"></i> Transaksi
                 </a>
