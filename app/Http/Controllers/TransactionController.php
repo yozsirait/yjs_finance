@@ -87,7 +87,8 @@ class TransactionController extends Controller
 
         // 👇 gunakan query yang sudah difilter
         $transactions = $query
-            ->with('account')
+            ->whereNotIn('category', ['Mutasi Masuk', 'Mutasi Keluar'])
+            ->with('account','member')
             ->latest('date')
             ->get();
 

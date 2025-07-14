@@ -12,57 +12,95 @@
     <div class="flex h-screen overflow-hidden">
 
         {{-- Sidebar --}}
-        <aside class="w-64 bg-white border-r shadow-sm p-4">
-            <h1 class="text-xl font-bold mb-6">YJ's Finance</h1>
-            <nav class="flex flex-col gap-3 text-gray-700">
+        <aside class="bg-white shadow-md w-full md:w-64 h-screen fixed md:relative z-10">
+            <div class="p-6 text-xl font-bold text-blue-700">
+                YJ's Finance
+            </div>
+
+            <nav class="space-y-1 px-4" x-data>
                 @php
-                    function active($path) {
-                        return request()->is($path) ? 'text-blue-600 font-semibold' : '';
+                    function activeRoute($route) {
+                        return request()->is($route . '*') ? 'bg-blue-100 text-blue-700 font-semibold' : 'text-gray-700';
                     }
                 @endphp
 
-                <a href="/dashboard" class="flex items-center gap-2 hover:text-blue-600 {{ active('dashboard') }}">
-                    <i data-lucide="layout-dashboard" class="w-5 h-5"></i> Dashboard
-                </a>
-                <a href="/kategori" class="flex items-center gap-2 hover:text-blue-600 {{ active('kategori') }}">
-                    <i data-lucide="folder" class="w-5 h-5"></i> Kategori
-                </a>
-                <a href="/anggaran" class="flex items-center gap-2 hover:text-blue-600 {{ active('anggaran') }}">
-                    <i data-lucide="wallet" class="w-5 h-5"></i> Anggaran Kategori
-                </a>                
-                <a href="/akun" class="flex items-center gap-2 hover:text-blue-600 {{ active('akun') }}">
-                    <i data-lucide="credit-card" class="w-5 h-5"></i> Bank & Wallet
-                </a>
-                <a href="/mutasi" class="flex items-center gap-2 hover:text-blue-600 {{ active('mutasi') }}">
-                    <i data-lucide="repeat" class="w-5 h-5"></i> Mutasi Rekening
-                </a>
-                <a href="/transaksi" class="flex items-center gap-2 hover:text-blue-600 {{ active('transaksi') }}">
-                    <i data-lucide="list" class="w-5 h-5"></i> Transaksi
-                </a>
-                <a href="/target-dana" class="flex items-center gap-2 hover:text-blue-600 {{ active('target-dana') }}">
-                    <i data-lucide="target" class="w-5 h-5"></i> Target Simpan Dana
-                </a>
-                <a href="/pengeluaran-rutin" class="flex items-center gap-2 hover:text-blue-600 {{ active('pengeluaran-rutin') }}">
-                    <i data-lucide="banknote-arrow-down" class="w-5 h-5"></i> Pengeluaran Rutin
-                </a>
-                <a href="/laporan/perbandingan-bulanan" class="flex items-center gap-2 hover:text-blue-600 {{ active('laporan/bulanan') }}">
-                    <i data-lucide="bar-chart-2" class="w-5 h-5"></i> Perbandingan Bulanan
-                </a>
-                <a href="/laporan/perbandingan-member" class="flex items-center gap-2 hover:text-blue-600 {{ active('laporan/member') }}">
-                    <i data-lucide="users" class="w-5 h-5"></i> Perbandingan Member
+                <a href="/dashboard" class="flex items-center gap-2 p-2 rounded {{ activeRoute('dashboard') }}">
+                    🏠 <span>Dashboard</span>
                 </a>
 
-                <!--<a href="/report/bulanan" class="flex items-center gap-2 hover:text-blue-600 {{ active('report/bulanan') }}">
-                    <i data-lucide="calendar" class="w-5 h-5"></i> Report Bulanan
+                <a href="/transaksi" class="flex items-center gap-2 p-2 rounded {{ activeRoute('transaksi') }}">
+                    💰 <span>Transaksi</span>
                 </a>
-                <a href="/report/tahunan" class="flex items-center gap-2 hover:text-blue-600 {{ active('report/tahunan') }}">
-                    <i data-lucide="calendar-range" class="w-5 h-5"></i> Report Tahunan
+
+                <a href="/akun" class="flex items-center gap-2 p-2 rounded {{ activeRoute('akun') }}">
+                    🏦 <span>Bank & Wallet</span>
                 </a>
-                <a href="/grafik" class="flex items-center gap-2 hover:text-blue-600 {{ active('grafik') }}">
-                    <i data-lucide="bar-chart-3" class="w-5 h-5"></i> Grafik
-                </a>-->
+
+                <a href="/kategori" class="flex items-center gap-2 p-2 rounded {{ activeRoute('kategori') }}">
+                    🗂️ <span>Kategori</span>
+                </a>
+
+                <a href="/target-dana" class="flex items-center gap-2 p-2 rounded {{ activeRoute('target-dana') }}">
+                    🎯 <span>Target Dana</span>
+                </a>
+
+                <a href="/pengeluaran-rutin" class="flex items-center gap-2 p-2 rounded {{ activeRoute('pengeluaran-rutin') }}">
+                    💸 <span>Pengeluaran Rutin</span>
+                </a>
+
+                <a href="/anggaran" class="flex items-center gap-2 p-2 rounded {{ activeRoute('anggaran') }}">
+                    🏷️ <span>Anggaran Kategori</span>
+                </a>
+
+                <a href="/mutasi" class="flex items-center gap-2 p-2 rounded {{ activeRoute('mutasi') }}">
+                    🔄 <span>Mutasi Rekening</span>
+                </a>
+
+                <a href="/transaksi-mutasi" class="flex items-center gap-2 p-2 rounded {{ activeRoute('transaksi-mutasi') }}">
+                    🔀 <span>Transaksi Mutasi</span>
+                </a>
+
+                 <!-- Laporan + dropdown -->
+                <div
+                    x-data="{ open: {{ request()->is('laporan*') ? 'true' : 'false' }} }"
+                    class="space-y-1"
+                >
+                    <!-- Toggle button -->
+                    <button
+                        @click="open = !open"
+                        class="flex items-center justify-between w-full p-2 rounded text-gray-700 hover:bg-gray-100"
+                        :class="{ 'bg-blue-100 text-blue-700 font-semibold': {{ request()->is('laporan*') ? 'true' : 'false' }} }"
+                    >
+                        <span class="flex items-center gap-2">
+                            📊 <span>Laporan</span>
+                        </span>
+                        <!-- caret -->
+                        <svg class="w-4 h-4 transform transition-transform"
+                            :class="open ? 'rotate-90' : ''" fill="none" stroke="currentColor"
+                            viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M9 5l7 7-7 7"/>
+                        </svg>
+                    </button>
+
+                    <!-- Sub‑menu -->
+                    <div x-show="open" x-collapse class="pl-4 space-y-1" x-cloak>
+                        <a href="/laporan/perbandingan-bulanan"
+                        class="flex items-center gap-2 p-2 rounded {{ activeRoute('perbandingan-bulanan') }}">
+                            📈 <span>Perbandingan Bulanan</span>
+                        </a>
+
+                        <a href="/laporan/perbandingan-member"
+                        class="flex items-center gap-2 p-2 rounded {{ activeRoute('perbandingan-member') }}">
+                            👥 <span>Perbandingan Member</span>
+                        </a>
+
+                        <a href="/laporan/tahunan"
+                        class="flex items-center gap-2 p-2 rounded {{ activeRoute('tahunan') }}">
+                            🧾 <span>Laporan Tahunan</span>
+                        </a>
+                    </div>
+                </div>
             </nav>
-
         </aside>
 
         {{-- Main Content --}}
@@ -77,7 +115,7 @@
 
     <script>
         lucide.createIcons();
-    </script>
+    </script>   
 
     <script>
     // Format semua input angka dengan class .rupiah

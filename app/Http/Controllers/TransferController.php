@@ -10,7 +10,8 @@ class TransferController extends Controller
     public function create()
     {
         $accounts = auth()->user()->accounts;
-        return view('mutasi.create', compact('accounts'));
+        $members = auth()->user()->members;
+        return view('mutasi.create', compact('accounts', 'members'));
     }
 
     public function store(Request $request)
@@ -26,13 +27,20 @@ class TransferController extends Controller
 
         $amount = (int) str_replace(['.', ','], '', $request->amount);
 
+        // Ambil member pertama dari user
+        $member = auth()->user()->members()->first();
+
+        if (!$member) {
+            return back()->withErrors(['member' => 'Tidak ada anggota yang terdaftar.']);
+        }
+
         // Transaksi pengeluaran
         $from = Transaction::create([
             'user_id' => auth()->id(),
             'account_id' => $request->from_account,
             'type' => 'pengeluaran',
             'category' => 'Mutasi Keluar',
-            'member_id' => null,
+            'member_id' => $member->id,
             'amount' => $amount,
             'date' => $request->date,
             'description' => $request->description ?? 'Mutasi keluar',
@@ -44,7 +52,7 @@ class TransferController extends Controller
             'account_id' => $request->to_account,
             'type' => 'pemasukan',
             'category' => 'Mutasi Masuk',
-            'member_id' => null,
+            'member_id' => $member->id,
             'amount' => $amount,
             'date' => $request->date,
             'description' => $request->description ?? 'Mutasi masuk',
@@ -60,6 +68,4 @@ class TransferController extends Controller
 
         return redirect()->route('transaksi.index')->with('success', 'Mutasi rekening berhasil disimpan.');
     }
-
-
 }

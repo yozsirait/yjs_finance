@@ -10,6 +10,8 @@ use App\Http\Controllers\SavingTargetController;
 use App\Http\Controllers\CategoryBudgetController;
 use App\Http\Controllers\RecurringExpenseController;
 use App\Http\Controllers\ComparisonController;
+use App\Http\Controllers\AnnualReportController;
+use App\Http\Controllers\MutationTransactionController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -67,6 +69,7 @@ Route::middleware('auth')->group(function () {
     // Mutasi
     Route::get('/mutasi', [TransferController::class, 'create'])->name('mutasi.create');
     Route::post('/mutasi', [TransferController::class, 'store'])->name('mutasi.store');
+    Route::get('/transaksi-mutasi', [MutationTransactionController::class, 'index'])->name('mutasi.transaksi.index');
 
     // Saving Target    
     Route::resource('/target-dana', SavingTargetController::class)->except(['show']);
@@ -79,6 +82,9 @@ Route::middleware('auth')->group(function () {
     // Laporan Perbandingan
     Route::get('/laporan/perbandingan-bulanan', [ComparisonController::class, 'bulan'])->name('laporan.bulanan');
     Route::get('/laporan/perbandingan-member', [ComparisonController::class, 'member'])->name('laporan.member');
+    Route::get('/laporan/tahunan', [AnnualReportController::class, 'index'])->name('laporan.tahunan');
+
+
 });
 
 
