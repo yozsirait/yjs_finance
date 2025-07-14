@@ -27,7 +27,9 @@
                 <a href="/kategori" class="flex items-center gap-2 hover:text-blue-600 {{ active('kategori') }}">
                     <i data-lucide="folder" class="w-5 h-5"></i> Kategori
                 </a>
-                
+                <a href="/anggaran" class="flex items-center gap-2 hover:text-blue-600 {{ active('anggaran') }}">
+                    <i data-lucide="wallet" class="w-5 h-5"></i> Anggaran Kategori
+                </a>                
                 <a href="/akun" class="flex items-center gap-2 hover:text-blue-600 {{ active('akun') }}">
                     <i data-lucide="credit-card" class="w-5 h-5"></i> Bank & Wallet
                 </a>
@@ -37,7 +39,10 @@
                 <a href="/transaksi" class="flex items-center gap-2 hover:text-blue-600 {{ active('transaksi') }}">
                     <i data-lucide="list" class="w-5 h-5"></i> Transaksi
                 </a>
-                <a href="/report/bulanan" class="flex items-center gap-2 hover:text-blue-600 {{ active('report/bulanan') }}">
+                <a href="/target-dana" class="flex items-center gap-2 hover:text-blue-600 {{ active('target-dana') }}">
+                    <i data-lucide="target" class="w-5 h-5"></i> Target Simpan Dana
+                </a>
+                <!--<a href="/report/bulanan" class="flex items-center gap-2 hover:text-blue-600 {{ active('report/bulanan') }}">
                     <i data-lucide="calendar" class="w-5 h-5"></i> Report Bulanan
                 </a>
                 <a href="/report/tahunan" class="flex items-center gap-2 hover:text-blue-600 {{ active('report/tahunan') }}">
@@ -45,7 +50,7 @@
                 </a>
                 <a href="/grafik" class="flex items-center gap-2 hover:text-blue-600 {{ active('grafik') }}">
                     <i data-lucide="bar-chart-3" class="w-5 h-5"></i> Grafik
-                </a>
+                </a>-->
             </nav>
 
         </aside>
@@ -62,6 +67,16 @@
 
     <script>
         lucide.createIcons();
+    </script>
+
+    <script>
+    // Format semua input angka dengan class .rupiah
+        document.querySelectorAll('input.rupiah').forEach(function (el) {
+            el.addEventListener('input', function (e) {
+                let value = e.target.value.replace(/[^\d]/g, '');
+                e.target.value = new Intl.NumberFormat('id-ID').format(value);
+            });
+        });
     </script>
 </body>
 </html>

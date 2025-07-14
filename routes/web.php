@@ -6,6 +6,8 @@ use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\AccountController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\TransferController;
+use App\Http\Controllers\SavingTargetController;
+use App\Http\Controllers\CategoryBudgetController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -39,6 +41,12 @@ Route::middleware('auth')->group(function () {
     Route::resource('/kategori', CategoryController::class)->except(['show', 'edit', 'update']);
     Route::get('/kategori/by-type/{type}', [CategoryController::class, 'byType'])->name('kategori.byType');
 
+    // Anggaran per Kategori
+    Route::get('/anggaran', [\App\Http\Controllers\CategoryBudgetController::class, 'index'])->name('anggaran.index');
+    Route::post('/anggaran', [\App\Http\Controllers\CategoryBudgetController::class, 'store'])->name('anggaran.store');
+    Route::delete('/anggaran/{id}', [\App\Http\Controllers\CategoryBudgetController::class, 'destroy'])->name('anggaran.destroy');
+
+
     // Akun Bank & Wallet
     Route::resource('/akun', AccountController::class)->except(['show']);
 
@@ -46,7 +54,13 @@ Route::middleware('auth')->group(function () {
     Route::get('/mutasi', [TransferController::class, 'create'])->name('mutasi.create');
     Route::post('/mutasi', [TransferController::class, 'store'])->name('mutasi.store');
 
-
+    // Saving Target    
+    Route::resource('/target-dana', SavingTargetController::class)->except(['show']);
+    Route::get('/target-dana/{id}', [SavingTargetController::class, 'show'])->name('target-dana.show');
+    Route::post('/target-dana/{id}/simpan', [SavingTargetController::class, 'simpanDana'])->name('target-dana.simpan');
+    Route::get('/target-dana/{target}/log/{log}/edit', [SavingTargetController::class, 'editLog'])->name('target-dana.log.edit');
+    Route::patch('/target-dana/{target}/log/{log}', [SavingTargetController::class, 'updateLog'])->name('target-dana.log.update');
+    Route::delete('/target-dana/{target}/log/{log}', [SavingTargetController::class, 'destroyLog'])->name('target-dana.log.destroy');
 });
 
 
