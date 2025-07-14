@@ -6,7 +6,7 @@ use App\Models\Member;
 use App\Models\Transaction;
 use App\Models\Account;
 use Illuminate\Http\Request;
-
+use App\Services\TransactionService;
 
 class TransactionController extends Controller
 {
@@ -26,34 +26,19 @@ class TransactionController extends Controller
         return view('transaksi.create', compact('members', 'accounts', 'categories', 'type'));
     }
 
-    public function store(Request $request)
+    public function store(Request $request, TransactionService $service)
     {
-        $request->validate([
-            'member_id' => 'required|exists:members,id',
-            'type'      => 'required|in:pemasukan,pengeluaran',
-            'account_id' => 'required|exists:accounts,id', // ✅
-            'amount'    => 'required|numeric|min:0',
-            'date'      => 'required|date',
-            'category'  => 'required|string',
+        $validated = $request->validate([
+            'member_id'  => 'required|exists:members,id',
+            'type'       => 'required|in:pemasukan,pengeluaran',
+            'account_id' => 'required|exists:accounts,id',
+            'amount'     => 'required|numeric|min:0',
+            'date'       => 'required|date',
+            'category'   => 'required|string',
             'description' => 'nullable|string',
         ]);
 
-        Transaction::create([
-            'user_id'    => auth()->id(),
-            'member_id'  => $request->member_id,
-            'type'       => $request->type,
-            'account_id' => $request->account_id,
-            'amount'     => str_replace(['.', ','], '', $request->amount), // bersihkan format Rp            
-            'date'       => $request->date,
-            'category'   => $request->category,
-            'description' => $request->description,
-        ]);
-
-        $account = Account::find($request->account_id);
-        if ($account) {
-            $account->updateBalance();
-        }
-
+        $service->create($validated);
 
         return redirect()->route('transaksi.index')->with('success', 'Transaksi berhasil disimpan!');
     }
@@ -88,7 +73,7 @@ class TransactionController extends Controller
         // 👇 gunakan query yang sudah difilter
         $transactions = $query
             ->whereNotIn('category', ['Mutasi Masuk', 'Mutasi Keluar'])
-            ->with('account','member')
+            ->with('account', 'member')
             ->latest('date')
             ->get();
 
@@ -118,12 +103,12 @@ class TransactionController extends Controller
         return view('transaksi.edit', compact('transaction', 'members', 'categories'));
     }
 
-    public function update(Request $request, $id)
+    public function update(Request $request, $id, TransactionService $service)
     {
-        $request->validate([
+        $validated = $request->validate([
             'date'        => 'required|date',
             'type'        => 'required|in:pemasukan,pengeluaran',
-            'account_id'  => 'required|exists:accounts,id', // ✅
+            'account_id'  => 'required|exists:accounts,id',
             'member_id'   => 'required|exists:members,id',
             'category'    => 'required|string|max:100',
             'amount'      => 'required|string',
@@ -131,35 +116,16 @@ class TransactionController extends Controller
         ]);
 
         $transaction = auth()->user()->transactions()->findOrFail($id);
-        $oldAccountId = $transaction->account_id;
 
-        $transaction->update([
-            'member_id'   => $request->member_id,
-            'type'        => $request->type,
-            'account_id'  => $request->account_id,
-            'category'    => $request->category,
-            'date'        => $request->date,
-            'amount'     => str_replace(['.', ','], '', $request->amount), // bersihkan format Rp            
-            'description' => $request->description,
-        ]);
-
-        if ($oldAccountId != $request->account_id) {
-            Account::find($oldAccountId)?->updateBalance();
-            Account::find($request->account_id)?->updateBalance();
-        } else {
-            Account::find($request->account_id)?->updateBalance();
-        }
+        $service->update($transaction, $validated);
 
         return redirect()->route('transaksi.index')->with('success', 'Transaksi berhasil diupdate.');
     }
 
-    public function destroy($id)
+    public function destroy($id, TransactionService $service)
     {
-        $transaction = auth()->user()->transactions()->findOrFail($id);        
-        $account = $transaction->account;
-        $transaction->delete();
-        $account?->updateBalance();
-
+        $transaction = auth()->user()->transactions()->findOrFail($id);
+        $service->delete($transaction);
 
         return redirect()->route('transaksi.index')->with('success', 'Transaksi berhasil dihapus.');
     }

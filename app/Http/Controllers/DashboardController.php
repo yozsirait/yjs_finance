@@ -46,6 +46,7 @@ class DashboardController extends Controller
 
         // Transaksi terakhir
         $latestTransactions = $user->transactions()
+            ->whereNotIn('category', ['Mutasi Masuk', 'Mutasi Keluar'])
             ->with(['member', 'account'])
             ->latest('date')
             ->take(5)
@@ -60,7 +61,7 @@ class DashboardController extends Controller
             ->get();
 
         foreach ($budgets as $budget) {
-            $totalSpent = $user->transactions()
+            $totalSpent = $user->transactions()                
                 ->where('type', $budget->type)
                 ->where('category', $budget->category)
                 ->whereMonth('date', $now->month)
