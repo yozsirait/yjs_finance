@@ -13,6 +13,17 @@ return new class extends Migration
     {
         Schema::create('recurring_expenses', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->string('name');
+            $table->string('type')->default('pengeluaran'); // fix untuk saat ini
+            $table->string('category');
+            $table->foreignId('account_id')->nullable();
+            $table->foreignId('member_id')->nullable();
+            $table->bigInteger('amount');
+            $table->string('description')->nullable();
+            $table->date('start_date');
+            $table->enum('interval', ['harian', 'mingguan', 'bulanan', 'tahunan']);
+            $table->boolean('active')->default(true);
             $table->timestamps();
         });
     }

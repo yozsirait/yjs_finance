@@ -8,6 +8,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\TransferController;
 use App\Http\Controllers\SavingTargetController;
 use App\Http\Controllers\CategoryBudgetController;
+use App\Http\Controllers\RecurringExpenseController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -35,6 +36,9 @@ Route::middleware('auth')->group(function () {
     Route::put('/transaksi/{id}', [TransactionController::class, 'update'])->name('transaksi.update');
     Route::delete('/transaksi/{id}', [TransactionController::class, 'destroy'])->name('transaksi.destroy');
     Route::get('/transaksi/{id}/duplicate', [TransactionController::class, 'duplicate'])->name('transaksi.duplicate');
+    
+    // Pengeluaran Rutin
+    Route::resource('/pengeluaran-rutin', \App\Http\Controllers\RecurringExpenseController::class)->except(['show']);
 
 
     // Kategori

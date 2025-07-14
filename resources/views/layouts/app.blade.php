@@ -42,6 +42,10 @@
                 <a href="/target-dana" class="flex items-center gap-2 hover:text-blue-600 {{ active('target-dana') }}">
                     <i data-lucide="target" class="w-5 h-5"></i> Target Simpan Dana
                 </a>
+                <a href="/pengeluaran-rutin" class="flex items-center gap-2 hover:text-blue-600 {{ active('pengeluaran-rutin') }}">
+                    <i data-lucide="repeat" class="w-5 h-5"></i> Pengeluaran Rutin
+                </a>
+
                 <!--<a href="/report/bulanan" class="flex items-center gap-2 hover:text-blue-600 {{ active('report/bulanan') }}">
                     <i data-lucide="calendar" class="w-5 h-5"></i> Report Bulanan
                 </a>
