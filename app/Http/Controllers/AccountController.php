@@ -76,7 +76,7 @@ class AccountController extends Controller
     {
         $request->validate([
             'name'    => 'required|string|max:100',
-            'type'    => 'required|in:bank,ewallet,cash',
+            'type'    => 'required|in:bank,ewallet,tunai',
             'balance' => 'nullable|numeric',
         ]);
 

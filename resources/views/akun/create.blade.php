@@ -14,7 +14,7 @@
             <select name="type" required class="w-full rounded border-gray-300">
                 <option value="bank">Bank</option>
                 <option value="ewallet">E-Wallet</option>
-                <option value="cash">Tunai</option>
+                <option value="tunai">Tunai</option>
             </select>
         </div>
         <div>
