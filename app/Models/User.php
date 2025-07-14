@@ -62,16 +62,6 @@ class User extends Authenticatable
         return $this->hasMany(Category::class);
     }
 
-    public function incomes()
-    {
-        return $this->hasMany(Income::class);
-    }
-
-    public function expenditures()
-    {
-        return $this->hasMany(Expenditure::class);
-    }
-
     public function accounts()
     {
         return $this->hasMany(Account::class);
@@ -80,5 +70,10 @@ class User extends Authenticatable
     public function savingTargets()
     {
         return $this->hasMany(SavingTarget::class);
+    }
+
+    public function recurringExpenses()
+    {
+        return $this->hasMany(\App\Models\RecurringExpense::class);
     }
 }

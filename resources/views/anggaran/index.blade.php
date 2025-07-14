@@ -78,6 +78,10 @@
                         onsubmit="return confirm('Hapus anggaran ini?')">
                         @csrf
                         @method('DELETE')
+                        <a href="{{ route('anggaran.edit', $budget->id) }}" class="text-xs text-blue-600 mr-2 hover:underline">
+    Edit
+</a>
+
                         <button class="text-xs text-red-600 mt-1 hover:underline">Hapus</button>
                     </form>
                 </div>

@@ -1,5 +1,9 @@
 <x-app-layout>
     <x-slot name="header">
+        <a href="{{ route('target-dana.index') }}"
+            class="inline-block bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded">
+            ← Kembali
+        </a>
         <h2 class="text-xl font-semibold text-gray-800">
             Detail Target: {{ $target->name }}
         </h2>

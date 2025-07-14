@@ -80,6 +80,9 @@
                                 {{ $item->account->name ?? '-' }}</div>
                         </div>
                         <div class="flex gap-2">
+                            <a href="{{ route('pengeluaran-rutin.edit', $item->id) }}"
+   class="text-blue-600 hover:underline text-sm">Edit</a>
+
                             {{-- nanti bisa tambahkan tombol edit di sini --}}
                             <form action="{{ route('pengeluaran-rutin.destroy', $item->id) }}" method="POST"
                                 onsubmit="return confirm('Hapus pengeluaran rutin ini?')">

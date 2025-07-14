@@ -9,11 +9,12 @@
 
         @forelse ($targets as $target)
             <div class="p-4 bg-white shadow rounded-xl space-y-2">
-                <div class="flex justify-between items-center">
+                <div class="flex justify-between items-start">
                     <div>
                         <h3 class="text-lg font-semibold">{{ $target->name }}</h3>
+
                         <a href="{{ route('target-dana.show', $target->id) }}"
-   class="text-sm text-blue-600 hover:underline">Detail</a>
+                            class="text-sm text-blue-600 hover:underline">Detail</a>
 
                         <p class="text-sm text-gray-500">
                             Target: Rp{{ number_format($target->target_amount, 0, ',', '.') }} |
@@ -23,10 +24,25 @@
                             <p class="text-sm text-gray-400">Deadline: {{ \Carbon\Carbon::parse($target->deadline)->format('d M Y') }}</p>
                         @endif
                     </div>
-                    <span class="text-sm text-gray-700 font-medium">
-                        {{ $target->progress_percentage }}%
-                    </span>
+
+                    <div class="text-right space-y-2">
+                        <span class="text-sm text-gray-700 font-medium block">
+                            {{ $target->progress_percentage }}%
+                        </span>
+
+                        {{-- Tombol Hapus --}}
+                        <form action="{{ route('target-dana.destroy', $target->id) }}" method="POST"
+                              onsubmit="return confirm('Yakin ingin menghapus target ini?')">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit"
+                                    class="text-red-600 text-xs hover:underline">
+                                Hapus
+                            </button>
+                        </form>
+                    </div>
                 </div>
+
                 <div class="w-full bg-gray-200 rounded-full h-3">
                     <div class="bg-blue-500 h-3 rounded-full"
                         style="width: {{ $target->progress_percentage }}%"></div>

@@ -42,7 +42,11 @@ Route::middleware('auth')->group(function () {
     Route::get('/transaksi/{id}/duplicate', [TransactionController::class, 'duplicate'])->name('transaksi.duplicate');
 
     // Pengeluaran Rutin
-    Route::resource('/pengeluaran-rutin', \App\Http\Controllers\RecurringExpenseController::class)->except(['show']);
+    Route::resource('/pengeluaran-rutin', RecurringExpenseController::class)->except(['show']);
+    Route::delete('/pengeluaran-rutin/{id}', [RecurringExpenseController::class, 'destroy'])->name('pengeluaran-rutin.destroy');
+    Route::get('/pengeluaran-rutin/{id}/edit', [RecurringExpenseController::class, 'edit'])->name('pengeluaran-rutin.edit');
+    Route::put('/pengeluaran-rutin/{id}', [RecurringExpenseController::class, 'update'])->name('pengeluaran-rutin.update');
+
 
 
     // Kategori
@@ -61,6 +65,9 @@ Route::middleware('auth')->group(function () {
 
         return response()->json($categories);
     });
+    Route::get('/anggaran/{id}/edit', [CategoryBudgetController::class, 'edit'])->name('anggaran.edit');
+    Route::put('/anggaran/{id}', [CategoryBudgetController::class, 'update'])->name('anggaran.update');
+
 
 
     // Akun Bank & Wallet
@@ -74,6 +81,7 @@ Route::middleware('auth')->group(function () {
     // Saving Target    
     Route::resource('/target-dana', SavingTargetController::class)->except(['show']);
     Route::get('/target-dana/{id}', [SavingTargetController::class, 'show'])->name('target-dana.show');
+    Route::delete('/target-dana/{id}', [SavingTargetController::class, 'destroy'])->name('target-dana.destroy');
     Route::post('/target-dana/{id}/simpan', [SavingTargetController::class, 'simpanDana'])->name('target-dana.simpan');
     Route::get('/target-dana/{target}/log/{log}/edit', [SavingTargetController::class, 'editLog'])->name('target-dana.log.edit');
     Route::patch('/target-dana/{target}/log/{log}', [SavingTargetController::class, 'updateLog'])->name('target-dana.log.update');
@@ -83,8 +91,6 @@ Route::middleware('auth')->group(function () {
     Route::get('/laporan/perbandingan-bulanan', [ComparisonController::class, 'bulan'])->name('laporan.bulanan');
     Route::get('/laporan/perbandingan-member', [ComparisonController::class, 'member'])->name('laporan.member');
     Route::get('/laporan/tahunan', [AnnualReportController::class, 'index'])->name('laporan.tahunan');
-
-
 });
 
 

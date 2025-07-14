@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
+
 use App\Models\RecurringExpense;
 
 use Illuminate\Http\Request;
@@ -46,5 +47,44 @@ class RecurringExpenseController extends Controller
         ]);
 
         return back()->with('success', 'Pengeluaran rutin berhasil ditambahkan.');
+    }
+
+    public function edit($id)
+    {
+        $recurring = RecurringExpense::where('user_id', auth()->id())->findOrFail($id);
+        return view('pengeluaran_rutin.edit', compact('recurring'));
+    }
+
+    public function update(Request $request, $id)
+    {
+        $amount = (int) str_replace(['.', ','], '', $request->amount);
+
+        $request->merge(['amount_clean' => $amount]);
+
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'amount_clean' => 'required|numeric|min:1000',
+            'description' => 'nullable|string',
+            'repeat_day' => 'required|integer|min:1|max:31',
+        ]);
+
+        $recurring = RecurringExpense::where('user_id', auth()->id())->findOrFail($id);
+        $recurring->update([
+            'name' => $request->name,
+            'amount' => $amount,
+            'description' => $request->description,
+            'repeat_day' => $request->repeat_day,
+        ]);
+
+        return redirect()->route('pengeluaran-rutin.index')->with('success', 'Pengeluaran rutin berhasil diperbarui.');
+    }
+
+
+    public function destroy($id)
+    {
+        $recurring = auth()->user()->recurringExpenses()->findOrFail($id);
+        $recurring->delete();
+
+        return redirect()->route('pengeluaran-rutin.index')->with('success', 'Pengeluaran rutin berhasil dihapus.');
     }
 }

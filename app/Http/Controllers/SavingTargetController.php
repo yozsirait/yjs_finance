@@ -130,4 +130,12 @@ class SavingTargetController extends Controller
 
         return back()->with('success', 'Log berhasil dihapus.');
     }
+
+    public function destroy($id)
+    {
+        $target = auth()->user()->savingTargets()->findOrFail($id);
+        $target->delete();
+
+        return redirect()->route('target-dana.index')->with('success', 'Target berhasil dihapus.');
+    }
 }

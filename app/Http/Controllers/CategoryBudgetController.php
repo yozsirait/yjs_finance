@@ -69,6 +69,33 @@ class CategoryBudgetController extends Controller
         return back()->with('success', 'Anggaran berhasil disimpan.');
     }
 
+    public function edit($id)
+    {
+        $budget = CategoryBudget::where('user_id', auth()->id())->findOrFail($id);
+        $categories = auth()->user()->categories()->where('type', $budget->type)->get();
+
+        return view('anggaran.edit', compact('budget', 'categories'));
+    }
+
+    public function update(Request $request, $id)
+    {
+        $amount = (int) str_replace(['.', ','], '', $request->amount);
+        $request->merge(['amount_clean' => $amount]);
+
+        $request->validate([
+            'amount_clean' => 'required|numeric|min:1000',
+        ]);
+
+        $budget = CategoryBudget::where('user_id', auth()->id())->findOrFail($id);
+        $budget->update([
+            'amount' => $amount
+        ]);
+
+        return redirect()->route('anggaran.index', ['month' => $budget->month, 'year' => $budget->year])
+            ->with('success', 'Anggaran berhasil diperbarui.');
+    }
+
+
     public function destroy($id)
     {
         $budget = CategoryBudget::where('user_id', auth()->id())->findOrFail($id);
