@@ -3,6 +3,21 @@
         <h2 class="text-xl font-semibold text-gray-800">Dashboard</h2>
     </x-slot>
 
+@if (!empty($overbudgetCategories))
+    <div class="bg-red-100 text-red-700 p-4 rounded-xl mb-6">
+        <h3 class="font-semibold mb-2">⚠️ Kategori Melebihi Anggaran:</h3>
+        <ul class="list-disc ml-5 space-y-1">
+            @foreach ($overbudgetCategories as $item)
+                <li>
+                    <strong>{{ ucfirst($item['type']) }} - {{ $item['name'] }}</strong> telah melebihi anggaran.<br>
+                    Anggaran: Rp{{ number_format($item['budget'], 0, ',', '.') }}, 
+                    Terpakai: Rp{{ number_format($item['spent'], 0, ',', '.') }}
+                </li>
+            @endforeach
+        </ul>
+    </div>
+@endif
+
     {{-- Ringkasan --}}
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
         <x-dashboard-card title="Pemasukan Bulan Ini" value="Rp{{ number_format($totalPemasukan, 0, ',', '.') }}"
@@ -56,6 +71,8 @@
         </table>
     </div>
 
+
+    
     {{-- Script grafik --}}
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>

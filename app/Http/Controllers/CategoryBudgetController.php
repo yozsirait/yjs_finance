@@ -3,58 +3,67 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-
 use App\Models\CategoryBudget;
+use App\Models\Category;
 use App\Models\Transaction;
-
 
 class CategoryBudgetController extends Controller
 {
-
     public function index(Request $request)
     {
+        $user = auth()->user();
         $month = $request->month ?? now()->month;
         $year = $request->year ?? now()->year;
 
-        $budgets = CategoryBudget::where('user_id', auth()->id())
+        // Ambil semua anggaran kategori
+        $budgets = CategoryBudget::where('user_id', $user->id)
             ->where('month', $month)
             ->where('year', $year)
             ->get();
 
-        // Hitung total transaksi per kategori
-        $usages = Transaction::where('user_id', auth()->id())
+        // Hitung total pemakaian per kategori
+        $usages = Transaction::where('user_id', $user->id)
             ->whereMonth('date', $month)
             ->whereYear('date', $year)
             ->selectRaw('category, type, SUM(amount) as total')
             ->groupBy('category', 'type')
             ->get();
 
-        return view('anggaran.index', compact('budgets', 'usages', 'month', 'year'));
+        // Ambil kategori dari tabel categories (untuk form input)
+        $categories = $user->categories()->orderBy('type')->get();
+
+        return view('anggaran.index', compact('budgets', 'usages', 'month', 'year', 'categories'));
     }
 
     public function store(Request $request)
     {
-        $amount = (int) str_replace(['.', ','], '', $request->amount);
+        $user = auth()->user();
 
+        // Bersihkan angka dari format rupiah
+        $amount = (int) str_replace(['.', ','], '', $request->amount);
         $request->merge(['amount_clean' => $amount]);
 
+        // Validasi input
         $request->validate([
-            'category' => 'required|string',
+            'category' => 'required|exists:categories,name',
             'type' => 'required|in:pemasukan,pengeluaran',
             'month' => 'required|integer|min:1|max:12',
             'year' => 'required|integer|min:2020|max:2100',
             'amount_clean' => 'required|numeric|min:1000',
         ]);
 
+        // Simpan atau update anggaran
         CategoryBudget::updateOrCreate(
             [
-                'user_id' => auth()->id(),
+                'user_id' => $user->id,
                 'category' => $request->category,
                 'type' => $request->type,
                 'month' => $request->month,
                 'year' => $request->year,
             ],
-            ['amount' => $amount]
+            [
+                'amount' => $amount,
+            ]
         );
 
         return back()->with('success', 'Anggaran berhasil disimpan.');

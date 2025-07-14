@@ -15,14 +15,16 @@
 
             <form action="{{ route('anggaran.store') }}" method="POST" class="grid grid-cols-2 md:grid-cols-3 gap-4">
                 @csrf
-                <select name="type" required class="rounded border-gray-300">
+
+                <select name="type" id="type" required class="rounded border-gray-300">
                     <option value="">Jenis</option>
                     <option value="pemasukan">Pemasukan</option>
                     <option value="pengeluaran">Pengeluaran</option>
                 </select>
 
-                <input type="text" name="category" placeholder="Nama Kategori" required
-                    class="rounded border-gray-300">
+                <select id="category" name="category" required class="rounded border-gray-300">
+                    <option value="">Pilih kategori</option>
+                </select>
 
                 <input type="text" name="amount" placeholder="Nominal Anggaran" required
                     class="rupiah rounded border-gray-300 text-right">
@@ -50,15 +52,17 @@
 
         {{-- List Anggaran --}}
         <div class="bg-white p-4 shadow rounded-xl">
-            <h3 class="text-lg font-semibold mb-4">Daftar Anggaran ({{ DateTime::createFromFormat('!m', $month)->format('F') }} {{ $year }})</h3>
+            <h3 class="text-lg font-semibold mb-4">
+                Daftar Anggaran ({{ DateTime::createFromFormat('!m', $month)->format('F') }} {{ $year }})
+            </h3>
 
             @forelse ($budgets as $budget)
                 @php
                     $usage = $usages->firstWhere('category', $budget->category)?->total ?? 0;
-                    $percent = min(100, round($usage / $budget->amount * 100));
+                    $percent = $budget->amount > 0 ? min(100, round($usage / $budget->amount * 100)) : 0;
                 @endphp
 
-                <div class="mb-4">
+                <div class="mb-5">
                     <div class="flex justify-between text-sm font-medium">
                         <span>{{ ucfirst($budget->type) }}: {{ $budget->category }}</span>
                         <span class="{{ $usage > $budget->amount ? 'text-red-600' : 'text-gray-600' }}">
@@ -83,12 +87,43 @@
         </div>
     </div>
 
+    {{-- Script: Format Rupiah --}}
     <script>
         document.querySelectorAll('input.rupiah').forEach(function (el) {
             el.addEventListener('input', function (e) {
                 let value = e.target.value.replace(/[^\d]/g, '');
                 e.target.value = new Intl.NumberFormat('id-ID').format(value);
             });
+        });
+    </script>
+
+    {{-- Script: Load kategori berdasarkan type --}}
+    <script>
+        const typeSelect = document.getElementById('type');
+        const categorySelect = document.getElementById('category');
+
+        function loadCategories(type) {
+            if (!type) return;
+            categorySelect.innerHTML = '<option value="">Memuat kategori...</option>';
+            fetch(`/kategori/by-type/${type}`)
+                .then(res => res.json())
+                .then(data => {
+                    let options = '<option value="">Pilih kategori</option>';
+                    data.forEach(cat => {
+                        options += `<option value="${cat.name}">${cat.name}</option>`;
+                    });
+                    categorySelect.innerHTML = options;
+                });
+        }
+
+        // Load saat pertama kali (jika sudah terisi value)
+        if (typeSelect.value) {
+            loadCategories(typeSelect.value);
+        }
+
+        // Ganti kategori saat type berubah
+        typeSelect.addEventListener('change', function () {
+            loadCategories(this.value);
         });
     </script>
 </x-app-layout>

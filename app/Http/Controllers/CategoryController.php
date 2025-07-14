@@ -10,7 +10,7 @@ class CategoryController extends Controller
 {
     public function index()
     {
-        $categories = auth()->user()->categories;
+        $categories = auth()->user()->categories->sortBy('type');
         return view('kategori.index', compact('categories'));
     }
 

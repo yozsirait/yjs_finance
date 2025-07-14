@@ -9,6 +9,7 @@ use App\Http\Controllers\TransferController;
 use App\Http\Controllers\SavingTargetController;
 use App\Http\Controllers\CategoryBudgetController;
 use App\Http\Controllers\RecurringExpenseController;
+use App\Http\Controllers\ComparisonController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -18,6 +19,7 @@ Route::get('/', function () {
 Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
+
 
 Route::middleware('auth')->group(function () {
     // Dashboard
@@ -36,7 +38,7 @@ Route::middleware('auth')->group(function () {
     Route::put('/transaksi/{id}', [TransactionController::class, 'update'])->name('transaksi.update');
     Route::delete('/transaksi/{id}', [TransactionController::class, 'destroy'])->name('transaksi.destroy');
     Route::get('/transaksi/{id}/duplicate', [TransactionController::class, 'duplicate'])->name('transaksi.duplicate');
-    
+
     // Pengeluaran Rutin
     Route::resource('/pengeluaran-rutin', \App\Http\Controllers\RecurringExpenseController::class)->except(['show']);
 
@@ -49,6 +51,14 @@ Route::middleware('auth')->group(function () {
     Route::get('/anggaran', [\App\Http\Controllers\CategoryBudgetController::class, 'index'])->name('anggaran.index');
     Route::post('/anggaran', [\App\Http\Controllers\CategoryBudgetController::class, 'store'])->name('anggaran.store');
     Route::delete('/anggaran/{id}', [\App\Http\Controllers\CategoryBudgetController::class, 'destroy'])->name('anggaran.destroy');
+    Route::get('/kategori/by-type/{type}', function ($type) {
+        $categories = auth()->user()
+            ->categories()
+            ->where('type', $type)
+            ->get(['id', 'name']);
+
+        return response()->json($categories);
+    });
 
 
     // Akun Bank & Wallet
@@ -65,6 +75,10 @@ Route::middleware('auth')->group(function () {
     Route::get('/target-dana/{target}/log/{log}/edit', [SavingTargetController::class, 'editLog'])->name('target-dana.log.edit');
     Route::patch('/target-dana/{target}/log/{log}', [SavingTargetController::class, 'updateLog'])->name('target-dana.log.update');
     Route::delete('/target-dana/{target}/log/{log}', [SavingTargetController::class, 'destroyLog'])->name('target-dana.log.destroy');
+
+    // Laporan Perbandingan
+    Route::get('/laporan/perbandingan-bulanan', [ComparisonController::class, 'bulan'])->name('laporan.bulanan');
+    Route::get('/laporan/perbandingan-member', [ComparisonController::class, 'member'])->name('laporan.member');
 });
 
 

@@ -43,7 +43,13 @@
                     <i data-lucide="target" class="w-5 h-5"></i> Target Simpan Dana
                 </a>
                 <a href="/pengeluaran-rutin" class="flex items-center gap-2 hover:text-blue-600 {{ active('pengeluaran-rutin') }}">
-                    <i data-lucide="repeat" class="w-5 h-5"></i> Pengeluaran Rutin
+                    <i data-lucide="banknote-arrow-down" class="w-5 h-5"></i> Pengeluaran Rutin
+                </a>
+                <a href="/laporan/perbandingan-bulanan" class="flex items-center gap-2 hover:text-blue-600 {{ active('laporan/bulanan') }}">
+                    <i data-lucide="bar-chart-2" class="w-5 h-5"></i> Perbandingan Bulanan
+                </a>
+                <a href="/laporan/perbandingan-member" class="flex items-center gap-2 hover:text-blue-600 {{ active('laporan/member') }}">
+                    <i data-lucide="users" class="w-5 h-5"></i> Perbandingan Member
                 </a>
 
                 <!--<a href="/report/bulanan" class="flex items-center gap-2 hover:text-blue-600 {{ active('report/bulanan') }}">

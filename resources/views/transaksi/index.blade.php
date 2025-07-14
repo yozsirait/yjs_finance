@@ -98,7 +98,8 @@
                 <tbody class="bg-white divide-y divide-gray-200 text-gray-700">
                     @forelse ($transactions as $trx)
                         <tr>
-                            <td class="px-4 py-2">{{ $trx->date }}</td>
+                            <td class="px-4 py-2">{{ \Carbon\Carbon::parse($trx->date)->format('d M Y') }}</td>
+
                             <td class="px-4 py-2">{{ $trx->member->name ?? '-' }}</td>
                             <td class="px-4 py-2 capitalize">
                                 <span
