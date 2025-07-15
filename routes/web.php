@@ -12,7 +12,10 @@ use App\Http\Controllers\RecurringExpenseController;
 use App\Http\Controllers\ComparisonController;
 use App\Http\Controllers\AnnualReportController;
 use App\Http\Controllers\MutationTransactionController;
+use App\Http\Controllers\MemberController;
+use App\Http\Controllers\PinController;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Auth;
 
 Route::get('/', function () {
     return view('welcome');
@@ -47,8 +50,6 @@ Route::middleware('auth')->group(function () {
     Route::get('/pengeluaran-rutin/{id}/edit', [RecurringExpenseController::class, 'edit'])->name('pengeluaran-rutin.edit');
     Route::put('/pengeluaran-rutin/{id}', [RecurringExpenseController::class, 'update'])->name('pengeluaran-rutin.update');
 
-
-
     // Kategori
     Route::resource('/kategori', CategoryController::class)->except(['show', 'edit', 'update']);
     Route::get('/kategori/by-type/{type}', [CategoryController::class, 'byType'])->name('kategori.byType');
@@ -67,8 +68,6 @@ Route::middleware('auth')->group(function () {
     });
     Route::get('/anggaran/{id}/edit', [CategoryBudgetController::class, 'edit'])->name('anggaran.edit');
     Route::put('/anggaran/{id}', [CategoryBudgetController::class, 'update'])->name('anggaran.update');
-
-
 
     // Akun Bank & Wallet
     Route::resource('/akun', AccountController::class)->except(['show']);
@@ -91,7 +90,47 @@ Route::middleware('auth')->group(function () {
     Route::get('/laporan/perbandingan-bulanan', [ComparisonController::class, 'bulan'])->name('laporan.bulanan');
     Route::get('/laporan/perbandingan-member', [ComparisonController::class, 'member'])->name('laporan.member');
     Route::get('/laporan/tahunan', [AnnualReportController::class, 'index'])->name('laporan.tahunan');
+
+    //Pin
+    Route::get('/masukkan-pin', [PinController::class, 'form'])->name('pin.form');
+    Route::post('/masukkan-pin', [PinController::class, 'verify'])->name('pin.verify');
+    // routes/web.php
+
+
+    Route::get('/pin', function () {
+        return view('pin.prompt');
+    })->name('pin.prompt');
+
+    Route::post('/pin', function (Illuminate\Http\Request $request) {
+        if ($request->pin === env('MEMBER_ACCESS_PIN')) {
+            session(['verified_pin' => true]);
+            return redirect()->intended(route('anggota.index'));
+        }
+
+        return back()->withErrors(['pin' => 'PIN salah']);
+    })->name('pin.submit');
+
+
+
+    // Anggota
+    Route::middleware('verify.pin')->group(function () {
+        Route::resource('anggota', MemberController::class)->parameters([
+            'anggota' => 'anggota', // ✅ beri tahu Laravel nama parameter di URL = $anggota
+        ]);
+    });
+
+
+
+    // Logout
+    Route::post('/logout', function () {
+        Auth::logout();
+        request()->session()->invalidate();
+        request()->session()->regenerateToken();
+        return redirect('/login');
+    })->name('logout');
 });
+
+
 
 
 

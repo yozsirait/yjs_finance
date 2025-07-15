@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -7,20 +8,24 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <script src="https://unpkg.com/lucide@latest"></script>
 </head>
+
 <body class="bg-gray-100">
 
-    <div class="flex h-screen overflow-hidden">
+    <div class="flex h-screen">
 
         {{-- Sidebar --}}
-        <aside class="bg-white shadow-md w-full md:w-64 h-screen fixed md:relative z-10">
+        <aside class="bg-white shadow-md w-64 h-screen fixed md:relative z-10 overflow-y-auto">
             <div class="p-6 text-xl font-bold text-blue-700">
                 YJ's Finance
             </div>
 
             <nav class="space-y-1 px-4" x-data>
                 @php
-                    function activeRoute($route) {
-                        return request()->is($route . '*') ? 'bg-blue-100 text-blue-700 font-semibold' : 'text-gray-700';
+                    function activeRoute($route)
+                    {
+                        return request()->is($route . '*')
+                            ? 'bg-blue-100 text-blue-700 font-semibold'
+                            : 'text-gray-700';
                     }
                 @endphp
 
@@ -44,7 +49,8 @@
                     🎯 <span>Target Dana</span>
                 </a>
 
-                <a href="/pengeluaran-rutin" class="flex items-center gap-2 p-2 rounded {{ activeRoute('pengeluaran-rutin') }}">
+                <a href="/pengeluaran-rutin"
+                    class="flex items-center gap-2 p-2 rounded {{ activeRoute('pengeluaran-rutin') }}">
                     💸 <span>Pengeluaran Rutin</span>
                 </a>
 
@@ -56,55 +62,65 @@
                     🔄 <span>Mutasi Rekening</span>
                 </a>
 
-                <a href="/transaksi-mutasi" class="flex items-center gap-2 p-2 rounded {{ activeRoute('transaksi-mutasi') }}">
+                <a href="/transaksi-mutasi"
+                    class="flex items-center gap-2 p-2 rounded {{ activeRoute('transaksi-mutasi') }}">
                     🔀 <span>Transaksi Mutasi</span>
                 </a>
 
-                 <!-- Laporan + dropdown -->
-                <div
-                    x-data="{ open: {{ request()->is('laporan*') ? 'true' : 'false' }} }"
-                    class="space-y-1"
-                >
-                    <!-- Toggle button -->
-                    <button
-                        @click="open = !open"
+                <!-- Laporan + dropdown -->
+                <div x-data="{ open: {{ request()->is('laporan*') ? 'true' : 'false' }} }" class="space-y-1">
+                    <button @click="open = !open"
                         class="flex items-center justify-between w-full p-2 rounded text-gray-700 hover:bg-gray-100"
-                        :class="{ 'bg-blue-100 text-blue-700 font-semibold': {{ request()->is('laporan*') ? 'true' : 'false' }} }"
-                    >
+                        :class="{ 'bg-blue-100 text-blue-700 font-semibold': {{ request()->is('laporan*') ? 'true' : 'false' }} }">
                         <span class="flex items-center gap-2">
                             📊 <span>Laporan</span>
                         </span>
-                        <!-- caret -->
-                        <svg class="w-4 h-4 transform transition-transform"
-                            :class="open ? 'rotate-90' : ''" fill="none" stroke="currentColor"
-                            viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M9 5l7 7-7 7"/>
+                        <svg class="w-4 h-4 transform transition-transform" :class="open ? 'rotate-90' : ''"
+                            fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M9 5l7 7-7 7" />
                         </svg>
                     </button>
 
-                    <!-- Sub‑menu -->
                     <div x-show="open" x-collapse class="pl-4 space-y-1" x-cloak>
                         <a href="/laporan/perbandingan-bulanan"
-                        class="flex items-center gap-2 p-2 rounded {{ activeRoute('perbandingan-bulanan') }}">
+                            class="flex items-center gap-2 p-2 rounded {{ activeRoute('perbandingan-bulanan') }}">
                             📈 <span>Perbandingan Bulanan</span>
                         </a>
 
                         <a href="/laporan/perbandingan-member"
-                        class="flex items-center gap-2 p-2 rounded {{ activeRoute('perbandingan-member') }}">
+                            class="flex items-center gap-2 p-2 rounded {{ activeRoute('perbandingan-member') }}">
                             👥 <span>Perbandingan Member</span>
                         </a>
 
                         <a href="/laporan/tahunan"
-                        class="flex items-center gap-2 p-2 rounded {{ activeRoute('tahunan') }}">
+                            class="flex items-center gap-2 p-2 rounded {{ activeRoute('tahunan') }}">
                             🧾 <span>Laporan Tahunan</span>
                         </a>
+
                     </div>
                 </div>
+
+                <a href="/anggota" class="flex items-center gap-2 p-2 rounded {{ activeRoute('anggota') }}">
+                    🧑‍🤝‍🧑 <span>Anggota</span>
+                </a>
+
+                <div class="px-4 text-sm text-gray-600 mt-6">
+                    👋 Halo, {{ auth()->user()->name }}
+                </div>
+
+                <form method="POST" action="{{ route('logout') }}" class="px-4 mt-4">
+                    @csrf
+                    <button type="submit"
+                        class="w-full flex items-center gap-2 p-2 rounded text-gray-700 hover:bg-red-100 hover:text-red-700">
+                        🚪 <span>Logout</span>
+                    </button>
+                </form>
             </nav>
         </aside>
 
         {{-- Main Content --}}
-        <main class="flex-1 p-6 overflow-y-auto">
+        <main class="flex-1 p-6 overflow-y-auto ml-30">
             {{ $header ?? '' }}
 
             <div class="mt-6">
@@ -115,16 +131,17 @@
 
     <script>
         lucide.createIcons();
-    </script>   
+    </script>
 
     <script>
-    // Format semua input angka dengan class .rupiah
-        document.querySelectorAll('input.rupiah').forEach(function (el) {
-            el.addEventListener('input', function (e) {
+        // Format input dengan class .rupiah
+        document.querySelectorAll('input.rupiah').forEach(function(el) {
+            el.addEventListener('input', function(e) {
                 let value = e.target.value.replace(/[^\d]/g, '');
                 e.target.value = new Intl.NumberFormat('id-ID').format(value);
             });
         });
     </script>
 </body>
+
 </html>

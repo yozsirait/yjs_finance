@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class Member extends Model
 {
+    protected $fillable = ['name'];
+
     public function user() {
         return $this->belongsTo(User::class);
     }
