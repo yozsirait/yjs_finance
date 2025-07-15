@@ -9,9 +9,23 @@
             <label class="block">Nama Akun</label>
             <input name="name" required class="w-full rounded border-gray-300" placeholder="Contoh: BCA, Gopay">
         </div>
+
+        <x-form-group label="Pemilik (Anggota)" name="member_id">
+            <select name="member_id" class="w-full border-gray-300 rounded">
+                <option value="">-- Pilih Anggota --</option>
+                @foreach (auth()->user()->members as $member)
+                    <option value="{{ $member->id }}"
+                        {{ old('member_id', $account->member_id ?? '') == $member->id ? 'selected' : '' }}>
+                        {{ $member->name }}
+                    </option>
+                @endforeach
+            </select>
+        </x-form-group>
+
         <div>
             <label class="block">Tipe</label>
             <select name="type" required class="w-full rounded border-gray-300">
+                <option value="">-- Pilih Tipe --</option>
                 <option value="bank">Bank</option>
                 <option value="ewallet">E-Wallet</option>
                 <option value="tunai">Tunai</option>

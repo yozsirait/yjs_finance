@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Account extends Model
 {
-    protected $fillable = ['user_id', 'name', 'type', 'balance'];
+    protected $fillable = ['user_id', 'member_id', 'name', 'type', 'balance'];
 
     public function user()
     {
@@ -60,5 +60,10 @@ class Account extends Model
         $target->save();
 
         return back()->with('success', 'Dana berhasil disimpan.');
+    }
+
+    public function member()
+    {
+        return $this->belongsTo(Member::class);
     }
 }

@@ -38,6 +38,13 @@
         </div>
     </div>
 
+    <div class="bg-white p-6 rounded shadow mb-6">
+        <h3 class="text-lg font-semibold mb-4">Tren Saldo 30 Hari</h3>
+        <canvas id="saldoLine" width="600" height="200" class="w-full"></canvas>
+    </div>
+
+
+
     {{-- Transaksi terbaru --}}
     <div class="bg-white rounded shadow p-6">
         <h3 class="mb-4 text-lg font-semibold">Transaksi Terbaru</h3>
@@ -86,6 +93,46 @@
 
     <!-- Script Chart.js HARUS di atas -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        const raw = {!! json_encode($last30days) !!};
+        const labels = raw.map(e => new Date(e.date).toLocaleDateString('id-ID', {
+            day: '2-digit',
+            month: 'short'
+        }));
+        const saldo = raw.map(e => e.saldo);
+
+        const ctx1 = document.getElementById('saldoLine').getContext('2d');
+        new Chart(ctx1, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Saldo',
+                    data: saldo,
+                    borderColor: '#3b82f6',
+                    backgroundColor: 'rgba(59,130,246,0.1)',
+                    tension: 0.3,
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        ticks: {
+                            callback: v => 'Rp' + v.toLocaleString('id-ID')
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+
     <script>
         const monthlyLabels = @json(range(1, 12));
         const pemasukanData = @json($monthly->pluck('pemasukan'));

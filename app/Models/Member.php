@@ -8,12 +8,18 @@ class Member extends Model
 {
     protected $fillable = ['name'];
 
-    public function user() {
+    public function user()
+    {
         return $this->belongsTo(User::class);
     }
 
-    public function transactions() {
+    public function transactions()
+    {
         return $this->hasMany(Transaction::class);
     }
 
+    public function accounts()
+    {
+        return $this->hasMany(Account::class);
+    }
 }

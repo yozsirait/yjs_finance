@@ -4,59 +4,73 @@
     </x-slot>
 
     <div class="max-w-3xl mx-auto mt-6 space-y-4">
+
+        {{-- Notifikasi sukses --}}
         @if (session('success'))
-            <div class="bg-green-100 text-green-700 p-2 rounded">
+            <div class="bg-green-100 text-green-700 p-3 rounded shadow-sm">
                 {{ session('success') }}
             </div>
         @endif
 
         {{-- Form tambah kategori --}}
-        <form action="{{ route('kategori.store') }}" method="POST" class="bg-white p-4 rounded shadow flex flex-wrap gap-2 items-center">
+        <form action="{{ route('kategori.store') }}" method="POST"
+            class="bg-white p-4 rounded shadow flex flex-wrap gap-3 items-center">
             @csrf
-            <input type="text" name="name" placeholder="Nama Kategori" required class="rounded border-gray-300 px-3 py-2">
-            <select name="type" required class="rounded border-gray-300 px-3 py-2">
-                <option value="">Jenis</option>
+            <input type="text" name="name" placeholder="Nama Kategori" required
+                class="flex-grow rounded border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-blue-400">
+            <select name="type" required
+                class="w-40 rounded border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-blue-400">
+                <option value="" disabled selected>Jenis</option>
                 <option value="pemasukan">Pemasukan</option>
                 <option value="pengeluaran">Pengeluaran</option>
             </select>
-            <button class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Tambah</button>
+            <button type="submit" class="bg-blue-600 text-white px-5 py-2 rounded hover:bg-blue-700 transition">
+                Tambah
+            </button>
         </form>
 
         {{-- Tabel kategori --}}
-        <div class="bg-white p-4 rounded shadow">
+        <div class="bg-white p-4 rounded shadow overflow-x-auto">
             <table class="w-full text-sm">
                 <thead>
-                    <tr class="text-left border-b">
+                    <tr class="text-left border-b border-gray-300">
                         <th class="py-2">Nama</th>
                         <th class="py-2">Jenis</th>
                         <th class="py-2">Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach ($categories as $cat)
-                        <tr class="border-b">
+                    @forelse ($categories as $cat)
+                        <tr class="border-b border-gray-200 hover:bg-gray-50 transition">
                             <td class="py-2">{{ $cat->name }}</td>
                             <td class="py-2">
-                                <span class="px-2 py-1 text-white text-xs rounded {{ $cat->type == 'pemasukan' ? 'text-green-600 bg-green-500' : 'text-red-600 bg-red-500' }}">
+                                <span
+                                    class="inline-block px-2 py-1 text-xs font-semibold rounded
+                                    {{ $cat->type === 'pemasukan' ? 'bg-green-500 text-green-900' : 'bg-red-500 text-red-900' }}">
                                     {{ ucfirst($cat->type) }}
                                 </span>
                             </td>
                             <td class="py-2">
-                                <form action="{{ route('kategori.destroy', $cat->id) }}" method="POST" onsubmit="return confirm('Hapus kategori ini?')">
+                                <form action="{{ route('kategori.destroy', $cat->id) }}" method="POST"
+                                    onsubmit="return confirm('Hapus kategori ini?')">
                                     @csrf
                                     @method('DELETE')
-                                    <button class="text-red-600 hover:underline text-xs">Hapus</button>
+                                    <button type="submit" class="text-red-600 hover:underline text-xs font-medium">
+                                        Hapus
+                                    </button>
                                 </form>
                             </td>
                         </tr>
-                    @endforeach
-                    @if ($categories->isEmpty())
+                    @empty
                         <tr>
-                            <td colspan="3" class="text-gray-500 text-sm py-4 text-center">Belum ada kategori.</td>
+                            <td colspan="3" class="text-gray-500 text-center py-6">
+                                Belum ada kategori.
+                            </td>
                         </tr>
-                    @endif
+                    @endforelse
                 </tbody>
             </table>
         </div>
+
     </div>
 </x-app-layout>
