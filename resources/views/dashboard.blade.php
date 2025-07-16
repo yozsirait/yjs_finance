@@ -23,7 +23,7 @@
         <div class="bg-white p-4 rounded-xl shadow space-y-4">
             <form method="GET" action="" class="flex items-center gap-4 flex-wrap">
                 <label for="member_id" class="text-sm text-gray-700">Filter Anggota:</label>
-                <select name="member_id" id="member_id" class="border-gray-300 rounded px-2 py-1">
+                <select name="member_id" id="member_id" class="w-35 border-gray-300 rounded-md">
                     <option value="">Semua</option>
                     @foreach (auth()->user()->members as $m)
                         <option value="{{ $m->id }}" {{ request('member_id') == $m->id ? 'selected' : '' }}>
