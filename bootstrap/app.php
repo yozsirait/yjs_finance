@@ -11,11 +11,18 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        // Daftarkan alias middleware custom
         $middleware->alias([
             'pin.protected' => \App\Http\Middleware\PinProtected::class,
             'verify.pin' => \App\Http\Middleware\VerifyPin::class,
         ]);
+
+        // Contoh menambahkan middleware ke grup 'web'
+        // $middleware->group('web', [
+        //     \App\Http\Middleware\YourMiddleware::class,
+        // ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
-        //
-    })->create();
+        // Konfigurasi handling exception (bisa dikosongkan)
+    })
+    ->create();
