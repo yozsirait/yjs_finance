@@ -19,15 +19,37 @@
     @endif
 
     {{-- Ringkasan --}}
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-        <x-dashboard-card title="Pemasukan Bulan Ini" value="Rp{{ number_format($totalPemasukan, 0, ',', '.') }}"
-            color="green" />
-        <x-dashboard-card title="Pengeluaran Bulan Ini" value="Rp{{ number_format($totalPengeluaran, 0, ',', '.') }}"
-            color="red" />
-        <x-dashboard-card title="Saldo Bulan Ini" value="Rp{{ number_format($saldoBulanIni, 0, ',', '.') }}"
-            color="{{ $saldoBulanIni >= 0 ? 'blue' : 'orange' }}" />
-        <x-dashboard-card title="Total Saldo Akun" value="Rp{{ number_format($totalSaldoAkun, 0, ',', '.') }}"
-            color="gray" />
+    <div class="grid gap-4 mb-6">
+        <div class="bg-white p-4 rounded-xl shadow space-y-4">
+            <form method="GET" action="" class="flex items-center gap-4 flex-wrap">
+                <label for="member_id" class="text-sm text-gray-700">Filter Anggota:</label>
+                <select name="member_id" id="member_id" class="border-gray-300 rounded px-2 py-1">
+                    <option value="">Semua</option>
+                    @foreach (auth()->user()->members as $m)
+                        <option value="{{ $m->id }}" {{ request('member_id') == $m->id ? 'selected' : '' }}>
+                            {{ $m->name }}
+                        </option>
+                    @endforeach
+                </select>
+                <button type="submit"
+                    class="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700 text-sm">Terapkan</button>
+            </form>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mt-4">
+                <x-dashboard-card title="Pemasukan Bulan Ini"
+                    value="Rp{{ number_format($totalPemasukan, 0, ',', '.') }}" color="green" />
+
+                <x-dashboard-card title="Pengeluaran Bulan Ini"
+                    value="Rp{{ number_format($totalPengeluaran, 0, ',', '.') }}" color="red" />
+
+                <x-dashboard-card title="Saldo Bulan Ini" value="Rp{{ number_format($saldoBulanIni, 0, ',', '.') }}"
+                    color="{{ $saldoBulanIni >= 0 ? 'blue' : 'orange' }}" />
+
+                <x-dashboard-card title="Total Saldo Akun" value="Rp{{ number_format($totalSaldoAkun, 0, ',', '.') }}"
+                    color="gray" />
+            </div>
+        </div>
+
     </div>
 
     {{-- Grafik Pemasukan & Pengeluaran --}}

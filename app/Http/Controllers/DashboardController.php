@@ -6,77 +6,91 @@ use Illuminate\Http\Request;
 use App\Models\CategoryBudget;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
+
 class DashboardController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         $user = auth()->user();
         $now  = now();
+        $memberId = $request->member_id;
 
         /* ─── Saldo bulan ini ───────────────────────────────────────────── */
-        $totalPemasukan   = $user->transactions()
-            ->where('type', 'pemasukan')
+        $trxQuery = $user->transactions()
             ->whereMonth('date', $now->month)
-            ->whereYear('date',  $now->year)
-            ->sum('amount');
+            ->whereYear('date',  $now->year);
 
-        $totalPengeluaran = $user->transactions()
-            ->where('type', 'pengeluaran')
-            ->whereMonth('date', $now->month)
-            ->whereYear('date',  $now->year)
-            ->sum('amount');
+        if ($memberId) {
+            $trxQuery->where('member_id', $memberId);
+        }
 
-        $saldoBulanIni    = $totalPemasukan - $totalPengeluaran;
-        $totalSaldoAkun   = $user->accounts()->sum('balance');
+        $totalPemasukan = (clone $trxQuery)->where('type', 'pemasukan')->sum('amount');
+        $totalPengeluaran = (clone $trxQuery)->where('type', 'pengeluaran')->sum('amount');
+        $saldoBulanIni = $totalPemasukan - $totalPengeluaran;
+
+        $accountQuery = $user->accounts();
+        if ($memberId) {
+            $accountQuery->where('member_id', $memberId);
+        }
+        $totalSaldoAkun = $accountQuery->sum('balance');
 
         /* ─── Perbandingan bulanan (bar chart) ──────────────────────────── */
-        $monthly = collect(range(1, 12))->mapWithKeys(function ($month) use ($user, $now) {
+        $monthly = collect(range(1, 12))->mapWithKeys(function ($month) use ($user, $now, $memberId) {
             $trx = $user->transactions()
                 ->selectRaw('type, SUM(amount) AS total')
                 ->whereYear('date', $now->year)
-                ->whereMonth('date', $month)
-                ->groupBy('type')
-                ->pluck('total', 'type');   // ['pemasukan' => xxx, 'pengeluaran' => yyy]
+                ->whereMonth('date', $month);
+
+            if ($memberId) {
+                $trx->where('member_id', $memberId);
+            }
+
+            $trx = $trx->groupBy('type')->pluck('total', 'type');
 
             return [$month => [
-                'pemasukan'   => $trx->get('pemasukan',   0),
+                'pemasukan'   => $trx->get('pemasukan', 0),
                 'pengeluaran' => $trx->get('pengeluaran', 0),
             ]];
         });
 
         /* ─── Saldo harian 30 hari (line chart) ─────────────────────────── */
-        $dates = collect(range(0, 29))->map(fn($i) => $now->copy()->subDays(29 - $i)->startOfDay());
-
-        // ambil semua transaksi 30 hari ke belakang sekali query
-        $txLast30 = $user->transactions()
-            ->whereBetween('date', [$now->copy()->subDays(29)->startOfDay(), $now->endOfDay()])
-            ->orderBy('date')
-            ->get()
-            ->groupBy(fn($t) => $t->date->toDateString());
-
         $period = CarbonPeriod::between(
             $now->copy()->subDays(29)->startOfDay(),
             $now->copy()->startOfDay()
         );
-        
+
+        $txLast30 = $user->transactions()
+            ->whereBetween('date', [$now->copy()->subDays(29)->startOfDay(), $now->endOfDay()]);
+
+        if ($memberId) {
+            $txLast30->where('member_id', $memberId);
+        }
+
+        $txLast30 = $txLast30->orderBy('date')->get()->groupBy(fn($t) => $t->date->toDateString());
+
         $runningSaldo = 0;
         $last30days = collect($period)->map(function ($date) use (&$runningSaldo, $txLast30) {
-            $dayTx   = $txLast30->get($date->toDateString(), collect());            
+            $dayTx = $txLast30->get($date->toDateString(), collect());
             $runningSaldo += $dayTx->where('type', 'pemasukan')->sum('amount')
-                -  $dayTx->where('type', 'pengeluaran')->sum('amount');
+                - $dayTx->where('type', 'pengeluaran')->sum('amount');
 
             return ['date' => $date->toDateString(), 'saldo' => $runningSaldo];
         });
 
-        
-
         /* ─── Transaksi terbaru (kec. mutasi) ───────────────────────────── */
-        $latestTransactions = $user->transactions()
+        $latestTransactionsQuery = $user->transactions()
             ->whereNotIn('category', ['Mutasi Masuk', 'Mutasi Keluar'])
-            ->with(['member', 'account'])
+            ->with(['member', 'account']);
+
+        if ($memberId) {
+            $latestTransactionsQuery->where('member_id', $memberId);
+        }
+
+        $latestTransactions = $latestTransactionsQuery
             ->latest('date')
             ->take(5)
             ->get();
+
 
         /* ─── Notifikasi kategori over‑budget bulanan ───────────────────── */
         $overbudgetCategories = [];
@@ -87,12 +101,17 @@ class DashboardController extends Controller
             ->get();
 
         foreach ($budgets as $budget) {
-            $spent = $user->transactions()
-                ->where('type',     $budget->type)
+            $spentQuery = $user->transactions()
+                ->where('type', $budget->type)
                 ->where('category', $budget->category)
                 ->whereMonth('date', $now->month)
-                ->whereYear('date',  $now->year)
-                ->sum('amount');
+                ->whereYear('date',  $now->year);
+
+            if ($memberId) {
+                $spentQuery->where('member_id', $memberId);
+            }
+
+            $spent = $spentQuery->sum('amount');
 
             if ($spent > $budget->amount) {
                 $overbudgetCategories[] = [
@@ -111,7 +130,7 @@ class DashboardController extends Controller
             'saldoBulanIni',
             'totalSaldoAkun',
             'monthly',
-            'last30days',          // <— tambah untuk line chart saldo harian
+            'last30days',
             'latestTransactions',
             'overbudgetCategories'
         ));
