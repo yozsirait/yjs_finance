@@ -21,11 +21,6 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
-
-
 Route::middleware('auth')->group(function () {
     // Dashboard
     Route::get('/dashboard', [DashboardController::class, 'index'])->middleware(['auth'])->name('dashboard');
@@ -36,9 +31,9 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     // Transaksi
-    Route::get('/transaksi', [TransactionController::class, 'index'])->name('transaksi.index'); // Halaman utama
-    Route::get('/transaksi/create', [TransactionController::class, 'create'])->name('transaksi.create'); // Form tambah
-    Route::post('/transaksi', [TransactionController::class, 'store'])->name('transaksi.store'); // Simpan
+    Route::get('/transaksi', [TransactionController::class, 'index'])->name('transaksi.index');
+    Route::get('/transaksi/create', [TransactionController::class, 'create'])->name('transaksi.create');
+    Route::post('/transaksi', [TransactionController::class, 'store'])->name('transaksi.store');
     Route::get('/transaksi/{id}/edit', [TransactionController::class, 'edit'])->name('transaksi.edit');
     Route::put('/transaksi/{id}', [TransactionController::class, 'update'])->name('transaksi.update');
     Route::delete('/transaksi/{id}', [TransactionController::class, 'destroy'])->name('transaksi.destroy');
@@ -46,26 +41,16 @@ Route::middleware('auth')->group(function () {
 
     // Pengeluaran Rutin
     Route::resource('/pengeluaran-rutin', RecurringExpenseController::class)->except(['show']);
-    Route::delete('/pengeluaran-rutin/{id}', [RecurringExpenseController::class, 'destroy'])->name('pengeluaran-rutin.destroy');
-    Route::get('/pengeluaran-rutin/{id}/edit', [RecurringExpenseController::class, 'edit'])->name('pengeluaran-rutin.edit');
-    Route::put('/pengeluaran-rutin/{id}', [RecurringExpenseController::class, 'update'])->name('pengeluaran-rutin.update');
+    Route::post('/pengeluaran-rutin/eksekusi', [RecurringExpenseController::class, 'eksekusi'])->name('pengeluaran-rutin.eksekusi');
 
     // Kategori
     Route::resource('/kategori', CategoryController::class)->except(['show', 'edit', 'update']);
     Route::get('/kategori/by-type/{type}', [CategoryController::class, 'byType'])->name('kategori.byType');
 
     // Anggaran per Kategori
-    Route::get('/anggaran', [\App\Http\Controllers\CategoryBudgetController::class, 'index'])->name('anggaran.index');
-    Route::post('/anggaran', [\App\Http\Controllers\CategoryBudgetController::class, 'store'])->name('anggaran.store');
-    Route::delete('/anggaran/{id}', [\App\Http\Controllers\CategoryBudgetController::class, 'destroy'])->name('anggaran.destroy');
-    Route::get('/kategori/by-type/{type}', function ($type) {
-        $categories = auth()->user()
-            ->categories()
-            ->where('type', $type)
-            ->get(['id', 'name']);
-
-        return response()->json($categories);
-    });
+    Route::get('/anggaran', [CategoryBudgetController::class, 'index'])->name('anggaran.index');
+    Route::post('/anggaran', [CategoryBudgetController::class, 'store'])->name('anggaran.store');
+    Route::delete('/anggaran/{id}', [CategoryBudgetController::class, 'destroy'])->name('anggaran.destroy');
     Route::get('/anggaran/{id}/edit', [CategoryBudgetController::class, 'edit'])->name('anggaran.edit');
     Route::put('/anggaran/{id}', [CategoryBudgetController::class, 'update'])->name('anggaran.update');
 
@@ -80,22 +65,20 @@ Route::middleware('auth')->group(function () {
     // Saving Target    
     Route::resource('/target-dana', SavingTargetController::class)->except(['show']);
     Route::get('/target-dana/{id}', [SavingTargetController::class, 'show'])->name('target-dana.show');
-    Route::delete('/target-dana/{id}', [SavingTargetController::class, 'destroy'])->name('target-dana.destroy');
+    //Route::delete('/target-dana/{id}', [SavingTargetController::class, 'destroy'])->name('target-dana.destroy');
     Route::post('/target-dana/{id}/simpan', [SavingTargetController::class, 'simpanDana'])->name('target-dana.simpan');
     Route::get('/target-dana/{target}/log/{log}/edit', [SavingTargetController::class, 'editLog'])->name('target-dana.log.edit');
     Route::patch('/target-dana/{target}/log/{log}', [SavingTargetController::class, 'updateLog'])->name('target-dana.log.update');
     Route::delete('/target-dana/{target}/log/{log}', [SavingTargetController::class, 'destroyLog'])->name('target-dana.log.destroy');
 
-    // Laporan Perbandingan
+    // Laporan
     Route::get('/laporan/perbandingan-bulanan', [ComparisonController::class, 'bulan'])->name('laporan.bulanan');
     Route::get('/laporan/perbandingan-member', [ComparisonController::class, 'member'])->name('laporan.member');
     Route::get('/laporan/tahunan', [AnnualReportController::class, 'index'])->name('laporan.tahunan');
 
-    //Pin
+    // Pin
     Route::get('/masukkan-pin', [PinController::class, 'form'])->name('pin.form');
     Route::post('/masukkan-pin', [PinController::class, 'verify'])->name('pin.verify');
-    // routes/web.php
-
 
     Route::get('/pin', function () {
         return view('pin.prompt');
@@ -110,16 +93,12 @@ Route::middleware('auth')->group(function () {
         return back()->withErrors(['pin' => 'PIN salah']);
     })->name('pin.submit');
 
-
-
     // Anggota
     Route::middleware('verify.pin')->group(function () {
         Route::resource('anggota', MemberController::class)->parameters([
-            'anggota' => 'anggota', // ✅ beri tahu Laravel nama parameter di URL = $anggota
+            'anggota' => 'anggota',
         ]);
     });
-
-
 
     // Logout
     Route::post('/logout', function () {
@@ -129,9 +108,5 @@ Route::middleware('auth')->group(function () {
         return redirect('/login');
     })->name('logout');
 });
-
-
-
-
 
 require __DIR__ . '/auth.php';

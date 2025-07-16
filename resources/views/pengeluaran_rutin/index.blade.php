@@ -1,6 +1,12 @@
 <x-app-layout>
     <x-slot name="header">
         <h2 class="text-xl font-semibold text-gray-800">Pengeluaran Rutin</h2>
+        <form action="{{ route('pengeluaran-rutin.eksekusi') }}" method="POST" class="mb-4">
+            @csrf
+            <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">
+                🔁 Eksekusi Pengeluaran Rutin Hari Ini
+            </button>
+        </form>
     </x-slot>
 
     <div class="max-w-4xl mx-auto mt-6 space-y-6">

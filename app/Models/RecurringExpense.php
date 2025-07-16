@@ -16,6 +16,7 @@ class RecurringExpense extends Model
         'amount',
         'description',
         'start_date',
+        'next_date',
         'interval',
         'active'
     ];
@@ -23,5 +24,15 @@ class RecurringExpense extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function member()
+    {
+        return $this->belongsTo(Member::class);
+    }
+
+    public function account()
+    {
+        return $this->belongsTo(Account::class);
     }
 }
